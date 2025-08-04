@@ -34,7 +34,7 @@ def create_donation(request, payload: DonationRequestSchema):
 
     if payload.project_id:
         project = Project.objects.get(id=payload.project_id)
-        callback_url=f"{settings.FRONTEND_URL}/project/{project.id}"
+        callback_url=f"{settings.FRONTEND_URL}/projects/{project.id}"
         if not project:
             return 404, ErrorResponse(message="Project not found", code=404)
 
@@ -83,7 +83,7 @@ def create_donation(request, payload: DonationRequestSchema):
             transaction_payload = {
                 "email": payload.donor_email,
                 "amount": int(payload.amount * 100),
-                "callback_url": f"{settings.FRONTEND_URL}/donation-success",
+                "callback_url": f"{settings.FRONTEND_URL}",
                 "currency":payload.currency
             }
 
