@@ -74,16 +74,16 @@ class PaystackClient():
 class PaypalClient():
     def __init__(self):
         self.secret_key = settings.PAYPAL_SECRET_KEY
-        self.public_key = settings.PAYPAL_PUBLIC_KEY
+        self.client_id = settings.PAYPAL_CLIENT_ID
         self.api_url = settings.PAYPAL_API_URL
         self.headers = {
             'Authorization': f'Bearer {self.secret_key}',
             'Content-Type': 'application/json'
         }
         paypalrestsdk.configure({
-            "mode": "sandbox",  # Or "live" for production
-            "client_id": settings.PAYPAL_CLIENT_ID,
-            "client_secret": settings.PAYPAL_CLIENT_SECRET
+            "mode": "sandbox", 
+            "client_id": self.client_id,
+            "client_secret": self.secret_key
         })
 
     def create_payment(self, amount, currency="USD", return_url=None, cancel_url=None, description="Deposit to wallet"):
@@ -93,8 +93,8 @@ class PaypalClient():
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": return_url or settings.PAYPAL_RETURN_URL,
-                "cancel_url": cancel_url or settings.PAYPAL_CANCEL_URL
+                "return_url": return_url or settings.FRONTEND_URL,
+                "cancel_url": cancel_url or settings.FRONTEND_URL
             },
             "transactions": [{
                 "item_list": {

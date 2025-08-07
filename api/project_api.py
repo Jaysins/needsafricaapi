@@ -77,7 +77,6 @@ def update_project(request, project_id: int, payload: ProjectRequestSchema, medi
         if cover_photo:
             project.cover_image = cover_photo
         project.save()
-        # Optional: Clear and replace all photos if media_files provided
         if media_files:
             ProjectPhoto.objects.filter(project=project).delete()
             for photo in media_files:
