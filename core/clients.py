@@ -6,6 +6,7 @@ logger = logging.getLevelName(__name__)
 import os
 import hmac
 import hashlib
+import paypalrestsdk
 
 
 class PaymentError(Exception):
@@ -69,7 +70,7 @@ class PaystackClient():
         return hmac.new(secret.encode("utf-8"), data, digestmod=hashlib.sha512).hexdigest()
 
 
-    
+
 class PaypalClient():
     def __init__(self):
         self.secret_key = settings.PAYPAL_SECRET_KEY
@@ -79,3 +80,53 @@ class PaypalClient():
             'Authorization': f'Bearer {self.secret_key}',
             'Content-Type': 'application/json'
         }
+        paypalrestsdk.configure({
+            "mode": "sandbox",  # Or "live" for production
+            "client_id": settings.PAYPAL_CLIENT_ID,
+            "client_secret": settings.PAYPAL_CLIENT_SECRET
+        })
+
+    def create_payment(self, amount, currency="USD", return_url=None, cancel_url=None, description="Deposit to wallet"):
+        payment = paypalrestsdk.Payment({
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": return_url or settings.PAYPAL_RETURN_URL,
+                "cancel_url": cancel_url or settings.PAYPAL_CANCEL_URL
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": [{
+                        "name": "Donation",
+                        "sku": "donation",
+                        "price": str(amount),
+                        "currency": currency,
+                        "quantity": 1
+                    }]
+                },
+                "amount": {
+                    "total": str(amount),
+                    "currency": currency
+                },
+                "description": description
+            }]
+        })
+        if payment.create():
+            approval_url = None
+            for link in payment.links:
+                if link.rel == "approval_url":
+                    approval_url = str(link.href)
+                    break
+            return {"success": True, "approval_url": approval_url, "payment_id": payment.id}
+        else:
+            return {"success": False, "error": payment.error}
+        
+
+    def execute_payment(self, payment_id, payer_id):
+        payment = paypalrestsdk.Payment.find(payment_id)
+        if payment.execute({"payer_id": payer_id}):
+            return {"success": True, "payment_id": payment.id}
+        else:
+            return {"success": False, "error": payment.error}

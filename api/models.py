@@ -28,7 +28,6 @@ class Project(BaseDBModel):
         ('education', 'Education'),
         ('healthcare', 'Healthcare'),
     ]
-    # Provided by admin
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True, null=True)
     target_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
