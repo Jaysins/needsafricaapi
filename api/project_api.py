@@ -4,7 +4,7 @@ from typing import List
 from .models import Project, ProjectPhoto
 from django.db.models import Q
 from .schema import (
-     ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter
+     ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter,AddProjectPhoto
 )
 from core.schema import BaseResponseSchema
 from django.core.paginator import Paginator, EmptyPage
@@ -52,15 +52,12 @@ def get_project(request, project_id: int):
 
 
 @router.post("/", response={201: ProjectResponse, 400: ErrorResponse})
-def create_project(request, payload: ProjectRequestSchema, media_files: List[UploadedFile] = File(default=None), cover_photo: UploadedFile = File(default=None)):
+def create_project(request, payload: ProjectRequestSchema, cover_photo: UploadedFile = File(default=None)):
     try:
         project = Project.objects.create(**payload.dict())
         if cover_photo:
             project.cover_image = cover_photo
             project.save()
-        if media_files:
-            for photo in media_files:
-                ProjectPhoto.objects.create(project=project, image=photo)
 
         return 201, ProjectResponse(data=project)
     except Exception as e:
@@ -99,18 +96,22 @@ def delete_project(request, project_id: int):
 
 
 @router.post("/{project_id}/photos", response={201: ProjectResponse, 404: ErrorResponse, 400: ErrorResponse})
-def add_project_photos(request, project_id: int, media_files: List[UploadedFile] = File(default=None)):
+def add_project_photos(request, project_id: int,payload:AddProjectPhoto ,image: UploadedFile = File(default=None)):
     try:
-        project = Project.objects.get(id=project_id)
-        photos = []
-        for photo in media_files:
-            photo = ProjectPhoto.objects.create(project=project, image=photo)
-            photos.append(photo)
+        project = Project.objects.prefetch_related("photos").get(id=project_id)
+        photo = ProjectPhoto.objects.create(
+            project=project,
+            name=payload.name,
+            deliver_date = payload.deliver_date)
+        if image:
+            photo.image = image
+            photo.save()
         return 201, ProjectResponse(data=project)
     except Project.DoesNotExist:
         return 404, ErrorResponse(message="Project not found", code=404)
     except Exception as e:
-        return 400, ErrorResponse(message="Error adding photos", detail=str(e), code=400)
+        raise e
+        # return 400, ErrorResponse(message="Error adding photos", detail=str(e), code=400)
     
 
 

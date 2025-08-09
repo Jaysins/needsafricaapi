@@ -32,12 +32,12 @@ class Project(BaseDBModel):
     summary = models.TextField(blank=True, null=True)
     target_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     deadline = models.DateField(blank=True, null=True)
-
- 
+    receiving_donation = models.BooleanField(default=True,blank=True, null=True)
+    
     amount_raised = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     percentage_funded = models.FloatField(default=0.0)
     remaining_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-
+    donation_reason = models.CharField(max_length=150, blank=True, null=True)
 
     milestones = models.TextField(help_text="List of completed actions, as bullet points", blank=True, null=True)
 
@@ -66,10 +66,12 @@ class Project(BaseDBModel):
     def __str__(self):
         return f"{self.title} - {self.percentage_funded:.1f}% funded"
 
+#proof of delivery
 class ProjectPhoto(BaseDBModel):
+    name= models.CharField(max_length=150, blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='photos')
     image = models.ImageField(upload_to='project_photos/')
-
+    deliver_date = models.DateField(blank=True, null=True)
     def __str__(self):
         return f"Photo for {self.project.title}"
 

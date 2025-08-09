@@ -62,9 +62,14 @@ class DonationListResponse(BaseResponseSchema):
 
 
 class ProjectPhotoSchema(ModelSchema):
+    image: str | None = None
     class Meta:
         model = ProjectPhoto
-        fields = ["image"]
+        fields = ["image","name","deliver_date"]
+
+class AddProjectPhoto(Schema):
+    name:str | None = None
+    deliver_date: datetime | None = None
 
 
 class ProjectSchema(ModelSchema):
@@ -82,6 +87,8 @@ class ProjectRequestSchema(Schema):
     category:  str | None = None
     location: str | None = None
     currency: Literal['USD', 'NGN'] | None = None
+    receiving_donation: bool | None = None
+    donation_reason:str | None = None
 
 
 

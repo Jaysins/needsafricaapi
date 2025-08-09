@@ -97,21 +97,21 @@ WSGI_APPLICATION = 'needafricaapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         default=os.getenv('DATABASE_URL'),  # optional fallback
-#         conn_max_age=600,                   # persistent connection
-#         ssl_require=True                    # enforce SSL (Render requires it)
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
+
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'), 
+        conn_max_age=600,                  
+        ssl_require=True                 
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -173,4 +173,4 @@ CORS_ALLOW_ALL_ORIGINS= True
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_API_URL= os.getenv("PAYSTACK_API_URL")
-FRONTEND_URL = "https://needsafrica.vercel.app/"
+FRONTEND_URL = "https://needsafrica.vercel"

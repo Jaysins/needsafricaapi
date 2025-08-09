@@ -83,7 +83,7 @@ def create_donation(request, payload: DonationRequestSchema):
             transaction_payload = {
                 "email": payload.donor_email,
                 "amount": int(payload.amount * 100),
-                "callback_url": f"{settings.FRONTEND_URL}",
+                "callback_url": f"{settings.FRONTEND_URL}/thankyou",
                 "currency":payload.currency
             }
 
