@@ -152,7 +152,8 @@ def execute_payment(request,payer_id:str=None,payment_id:str=None, token:str=Non
                     return 400, ErrorResponse(message="Donation already complete", code=400)
             if donation:
                 donation.status= Donation.DonationStatus.COMPLETED
-                donation.agreement_id = resp["agreement_id"]
+                if not payer_id and not payment_id:
+                    donation.agreement_id = resp["agreement_id"]
                 donation.save()
                 if donation.project:
                     donation.project.amount_raised += donation.amount
@@ -163,7 +164,8 @@ def execute_payment(request,payer_id:str=None,payment_id:str=None, token:str=Non
                 return 404, ErrorResponse(message="Donation not found",detail=str(resp), code=404)
         return 400, ErrorResponse(message="AN ERROR OCCURED", code="400")
     except Exception as e:
-        return 500, ErrorResponse(message="An error occured", detail=str(e), code=500)
+        raise e
+        # return 500, ErrorResponse(message="An error occured", detail=str(e), code=500)
             
 
 @router.get("/donation/{donation_id}", response={200:DonationResponse, 400:ErrorResponse, 500:ErrorResponse})
