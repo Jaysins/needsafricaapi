@@ -190,13 +190,13 @@ def list_donations(request, filters: DonationFilter = Query(...), page:int =1, p
         donations_qs = donations_qs.filter(Q(donor_full_name__icontains=filters.search)| Q(donor_email__icontains=filters.search) | Q(project__title__icontains=filters.search))
 
     if filters.frequency:
-        donations_qs= donations_qs.filter(frequency=filters.frequency)
+        donations_qs= donations_qs.filter(frequency__icontains=filters.frequency)
     if filters.status:
         status = filters.status.upper()
-        donations_qs = donations_qs.filter(status=status)
+        donations_qs = donations_qs.filter(status__icontains=status)
 
     if filters.payment_method:
-        donations_qs = donations_qs.filter(payment_client=filters.payment_method)
+        donations_qs = donations_qs.filter(payment_client__icontains=filters.payment_method)
 
     paginator = Paginator(donations_qs, page_size)
     total = paginator.count

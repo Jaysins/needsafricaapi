@@ -20,9 +20,9 @@ def list_projects(request,filters:ProjectFilter= Query(...) ,page: int = 1, page
         if filters.search:
             queryset = queryset.filter(Q(title__icontains=filters.search) | Q(summary__icontains=filters.search) | Q(category__icontains=filters.search))
         if filters.category:
-            queryset = queryset.filter(category=filters.category)
+            queryset = queryset.filter(category__icontains=filters.category)
         if filters.status:
-            queryset = queryset.filter(status=filters.status)
+            queryset = queryset.filter(status__icontains=filters.status)
             
         paginator = Paginator(queryset, page_size)
         try:
