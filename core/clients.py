@@ -1,12 +1,16 @@
 from django.conf import settings
 from typing import Dict,Any,Optional
+from urllib.parse import urlparse, parse_qs
 import logging
 import requests
-logger = logging.getLevelName(__name__)
 import os
 import hmac
 import hashlib
+import datetime
 import paypalrestsdk
+
+
+logger = logging.getLevelName(__name__)
 
 
 class PaymentError(Exception):
@@ -80,11 +84,36 @@ class PaypalClient():
             'Authorization': f'Bearer {self.secret_key}',
             'Content-Type': 'application/json'
         }
+        print(settings.PAYPAL_API_URL)
         paypalrestsdk.configure({
             "mode": "sandbox", 
             "client_id": self.client_id,
             "client_secret": self.secret_key
         })
+
+    def get_access_token(self):
+        url = f"https://api-m.sandbox.paypal.com/v1/oauth2/token"
+        auth = (self.client_id, self.secret_key)
+        data = {'grant_type': 'client_credentials'}
+        response = requests.post(url, auth=auth, data=data)
+        print(response.text)
+        response.raise_for_status()
+        return response.json()['access_token']
+    
+
+    def verify_webhook_signature(self, verification_data):
+        access_token = self.get_access_token()
+        print(self.api_url)
+        verify_url = f"https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature"
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+        response = requests.post(verify_url, json=verification_data, headers=headers)
+        if response.status_code == 200:
+            result = response.json()
+            return result.get('verification_status') == 'SUCCESS'
+        return False
 
     def create_payment(self, amount, currency="USD", return_url=None, cancel_url=None, description="Deposit to wallet"):
         payment = paypalrestsdk.Payment({
@@ -123,10 +152,66 @@ class PaypalClient():
         else:
             return {"success": False, "error": payment.error}
         
+    def subcription_payment(self,amount, currency="USD", return_url=None, cancel_url=None,name="", description="NeedsAfrica donation"):
+        plan=paypalrestsdk.BillingPlan({
+            "name": f"Monthly Donation Plan ${amount}",
+            "description": f"{description}",
+            "type": "INFINITE",
+            "payment_definitions": [{
+                "name": "Monthly Donation",
+                "type": "REGULAR",
+                "frequency": "MONTH",
+                "frequency_interval": "1",
+                "amount": {"currency": "USD", "value": amount},
+                "cycles": "0"
+            }],
+            "merchant_preferences": {
+                "auto_bill_amount": "YES",
+                "initial_fail_amount_action": "CONTINUE",
+                "max_fail_attempts": "1",
+                "return_url": return_url or settings.FRONTEND_URL,
+                "cancel_url": cancel_url or settings.FRONTEND_URL,
+                "setup_fee": {"value": amount, "currency": "USD"}
+            }
+        })
+        
+        if plan.create():
+            approval_url = None
+            plan.activate()
+            future = datetime.datetime.utcnow() + datetime.timedelta(hours=25)
+            start_date = future.strftime("%Y-%m-%dT%H:%M:%SZ")
+            agreement = paypalrestsdk.BillingAgreement({
+                "name": "Monthly Donation Agreement",
+                "description": "Agree to donate $100 every month",
+                "start_date": start_date,
+                "plan": {"id": plan.id},
+                "payer": {"payment_method": "paypal"}
+            })
+            
 
-    def execute_payment(self, payment_id, payer_id):
-        payment = paypalrestsdk.Payment.find(payment_id)
-        if payment.execute({"payer_id": payer_id}):
-            return {"success": True, "payment_id": payment.id}
-        else:
-            return {"success": False, "error": payment.error}
+            if agreement.create():
+                print("Agreement object",agreement)
+               
+            
+                # return {"error": "Failed to create agreement", "details": agreement.error}
+                for link in agreement.links:
+                    if link.rel == "approval_url":
+                        approval_url = str(link.href)
+                        token = parse_qs(urlparse(approval_url).query).get('token', [None])[0]
+                        print("Agreement token:", token)
+                        return {"success":True, "approval_url":approval_url, "token":token}
+        
+    def execute_payment_or_subscription(self,payment_id, payer_id, token):
+        if payer_id:
+            payment = paypalrestsdk.Payment.find(payment_id)
+            payment =payment.execute({"payer_id": payer_id})
+            if payment:
+               return {"success":True}
+            return False
+        else: 
+            payment = paypalrestsdk.BillingAgreement.execute(token)
+            print(payment)
+            if payment:
+                return {"success":True, "agreement_id":payment.id}
+            return False
+

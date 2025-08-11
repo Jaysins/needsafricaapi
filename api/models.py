@@ -100,5 +100,6 @@ class Donation(BaseDBModel):
     payment_plan_code = models.CharField(max_length=255, blank=True, null=True)
     payment_client= models.CharField(max_length=255, blank=True, null=True, default="PAYSTACK")
     reference = models.CharField(max_length=200, blank=True, null=True)
+    agreement_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
     def __str__(self):
         return f"{self.donor_full_name} donated {self.amount} {self.currency.upper()}"
