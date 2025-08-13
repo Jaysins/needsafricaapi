@@ -51,7 +51,9 @@ class Project(BaseDBModel):
         ('CANCELLED', 'CANCELLED'),
     ])
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
-
+    beneficiary_count = models.IntegerField(default=0)
+    impact_count = models.IntegerField(default=0)
+    impact_phrase = models.CharField(max_length=150, blank=True, null=True)
   
 
     def update_progress(self):

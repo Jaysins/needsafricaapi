@@ -89,6 +89,9 @@ class ProjectRequestSchema(Schema):
     currency: Literal['USD', 'NGN'] | None = None
     receiving_donation: bool | None = None
     donation_reason:str | None = None
+    beneficiary_count: int | None = None
+    impact_phrase:str | None = None
+    impact_count: int | None = None
 
 
 
