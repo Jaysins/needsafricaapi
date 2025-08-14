@@ -1,48 +1,48 @@
-from ninja import Router,File, Query
+from ninja import Router, File, Query
 from ninja.files import UploadedFile
 from typing import List
 from .models import Project, ProjectPhoto
 from django.db.models import Q
 from .schema import (
-     ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter,AddProjectPhoto
+    ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter, AddProjectPhoto
 )
 from core.schema import BaseResponseSchema
 from django.core.paginator import Paginator, EmptyPage
-
 
 router = Router(tags=["Projects"])
 
 
 @router.get("/", auth=None, response={200: ProjectListSchema, 400: ErrorResponse})
-def list_projects(request,filters:ProjectFilter= Query(...) ,page: int = 1, page_size: int = 10):
+def list_projects(request, filters: ProjectFilter = Query(...), page: int = 1, page_size: int = 10):
     try:
         queryset = Project.objects.prefetch_related("photos").all().order_by('-created_at')
         if filters.search:
-            queryset = queryset.filter(Q(title__icontains=filters.search) | Q(summary__icontains=filters.search) | Q(category__icontains=filters.search))
+            queryset = queryset.filter(Q(title__icontains=filters.search) | Q(summary__icontains=filters.search) | Q(
+                category__icontains=filters.search))
         if filters.category:
             queryset = queryset.filter(category__icontains=filters.category)
         if filters.status:
             queryset = queryset.filter(status__icontains=filters.status)
-            
+
         paginator = Paginator(queryset, page_size)
         try:
             page_projects = paginator.page(page)
         except EmptyPage:
             return 400, ErrorResponse(message="Invalid page number")
         data = page_projects.object_list
-       
+
         return 200, ProjectListSchema(
             page=page,
             total=paginator.count,
-            page_size = page_size,
-            total_pages= paginator.num_pages,
+            page_size=page_size,
+            total_pages=paginator.num_pages,
             data=data
         )
     except Exception as e:
         return 400, ErrorResponse(message="Error listing projects", detail=str(e), code=400)
 
 
-@router.get("/{project_id}",auth=None, response={200: ProjectResponse, 404: ErrorResponse})
+@router.get("/{project_id}", auth=None, response={200: ProjectResponse, 404: ErrorResponse})
 def get_project(request, project_id: int):
     try:
         project = Project.objects.prefetch_related("photos").get(id=project_id)
@@ -65,7 +65,9 @@ def create_project(request, payload: ProjectRequestSchema, cover_photo: Uploaded
 
 
 @router.put("/{project_id}", response={200: ProjectResponse, 404: ErrorResponse, 400: ErrorResponse})
-def update_project(request, project_id: int, payload: ProjectRequestSchema, media_files: List[UploadedFile] = File(default=None), cover_photo: UploadedFile = File(default=None)):
+def update_project(request, project_id: int, payload: ProjectRequestSchema,
+                   media_files: List[UploadedFile] = File(default=None),
+                   cover_photo: UploadedFile = File(default=None)):
     try:
         print(payload)
         project = Project.objects.get(id=project_id)
@@ -96,13 +98,13 @@ def delete_project(request, project_id: int):
 
 
 @router.post("/{project_id}/photos", response={201: ProjectResponse, 404: ErrorResponse, 400: ErrorResponse})
-def add_project_photos(request, project_id: int,payload:AddProjectPhoto ,image: UploadedFile = File(default=None)):
+def add_project_photos(request, project_id: int, payload: AddProjectPhoto, image: UploadedFile = File(default=None)):
     try:
         project = Project.objects.prefetch_related("photos").get(id=project_id)
         photo = ProjectPhoto.objects.create(
             project=project,
             name=payload.name,
-            deliver_date = payload.deliver_date)
+            deliver_date=payload.deliver_date)
         if image:
             photo.image = image
             photo.save()
@@ -112,7 +114,6 @@ def add_project_photos(request, project_id: int,payload:AddProjectPhoto ,image: 
     except Exception as e:
         raise e
         # return 400, ErrorResponse(message="Error adding photos", detail=str(e), code=400)
-    
 
 
 @router.delete("/photos/{photo_id}", response={200: BaseResponseSchema, 404: ErrorResponse})

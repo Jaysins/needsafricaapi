@@ -109,7 +109,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'), 
         conn_max_age=600,                  
-        ssl_require=True                 
+        ssl_require=False
     )
 }
 
@@ -173,7 +173,7 @@ CORS_ALLOW_ALL_ORIGINS= True
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_API_URL= os.getenv("PAYSTACK_API_URL")
-FRONTEND_URL = "https://needsafrica.vercel"
+FRONTEND_URL = "https://needsafrica.org"
 PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
 PAYPAL_CLIENT_ID=os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
