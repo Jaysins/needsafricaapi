@@ -11,6 +11,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication as DRFJWTA
 from api.auth_api import router as auth_api
 from api.project_api import router as project_api
 from api.donation_api import router as donation_api
+from api.volunteer_api import router as volunteer_api
 
 class JWTAuth(HttpBearer):
     def authenticate(self, request, token):
@@ -31,6 +32,7 @@ api = NinjaAPI(
 api.add_router("/auth/", auth_api)
 api.add_router("/project/", project_api)
 api.add_router("/donation/", donation_api)
+api.add_router("/volunteer/", volunteer_api)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

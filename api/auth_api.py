@@ -5,11 +5,12 @@ from django.contrib.auth.hashers import make_password
 from .schema import *
 from .models import User
 
-
 router = Router()
 
-@router.post("/login", auth=None,response={200:LoginResponse, 401:ErrorResponse, 400:ErrorResponse, 500:ErrorResponse})
-def login(request, payload:LoginSchema):
+
+@router.post("/login", auth=None,
+             response={200: LoginResponse, 401: ErrorResponse, 400: ErrorResponse, 500: ErrorResponse})
+def login(request, payload: LoginSchema):
     """
     user login
     """
@@ -29,7 +30,6 @@ def login(request, payload:LoginSchema):
         return 500, ErrorResponse(message="An error occurred", detail=str(e), code=500)
 
 
-
 @router.post("/register", auth=None, response={201: LoginResponse, 400: ErrorResponse, 500: ErrorResponse})
 def register(request, payload: RegisterSchema):
     """
@@ -40,7 +40,7 @@ def register(request, payload: RegisterSchema):
             return 400, ErrorResponse(message="Username already taken", code=400)
         if User.objects.filter(email=payload.email).exists():
             return 400, ErrorResponse(message="Email already registered", code=400)
-        
+
         user = User.objects.create(
             username=payload.username,
             email=payload.email,

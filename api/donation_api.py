@@ -1,4 +1,4 @@
-from ninja import Router,File, Query
+from ninja import Router, File, Query
 from ninja.files import UploadedFile
 from ninja.responses import Response
 
@@ -18,27 +18,23 @@ from django.core.paginator import Paginator, EmptyPage
 from django.utils import timezone
 from django.db.models import Sum
 
-
-
 router = Router(tags=["Donations"])
 
 
-
-@router.post("/donations", auth=None, response={201: dict,200:dict, 400: ErrorResponse, 404: ErrorResponse})
+@router.post("/donations", auth=None, response={201: dict, 200: dict, 400: ErrorResponse, 404: ErrorResponse})
 def create_donation(request, payload: DonationRequestSchema):
     print(payload)
-    payload_dict = payload.model_dump() 
+    payload_dict = payload.model_dump()
     payment_client = payload_dict.pop("payment_client")
 
     callback_url = f"{settings.FRONTEND_URL}"
 
     if payload.project_id:
         project = Project.objects.get(id=payload.project_id)
-        callback_url=f"{settings.FRONTEND_URL}/thankyou"
+        callback_url = f"{settings.FRONTEND_URL}/thankyou"
         if not project:
             return 404, ErrorResponse(message="Project not found", code=404)
 
-    
     if payment_client == 'PAYSTACK':
         paystack = PaystackClient()
 
@@ -48,7 +44,7 @@ def create_donation(request, payload: DonationRequestSchema):
                 "name": f"Monthly Donation Plan - {payload.project_id}",
                 "interval": "monthly",
                 "amount": int(payload.amount * 100),
-                "currency":payload.currency
+                "currency": payload.currency
             }
 
             plan_response = paystack.initialize_plan(plan_payload)
@@ -56,10 +52,10 @@ def create_donation(request, payload: DonationRequestSchema):
 
             transaction_payload = {
                 "email": payload.donor_email,
-                "amount": int(payload.amount * 100),  
+                "amount": int(payload.amount * 100),
                 "plan": plan_code,
                 "callback_url": callback_url,
-                "currency":payload.currency
+                "currency": payload.currency
             }
 
             init_response = paystack.initialize(transaction_payload)
@@ -67,7 +63,6 @@ def create_donation(request, payload: DonationRequestSchema):
 
             ref = init_response.get("data").get("reference")
 
-           
             data = {
                 "checkout_url": authorization_url
             }
@@ -84,7 +79,7 @@ def create_donation(request, payload: DonationRequestSchema):
                 "email": payload.donor_email,
                 "amount": int(payload.amount * 100),
                 "callback_url": f"{settings.FRONTEND_URL}/thankyou",
-                "currency":payload.currency
+                "currency": payload.currency
             }
 
             init_response = paystack.initialize(transaction_payload)
@@ -97,49 +92,51 @@ def create_donation(request, payload: DonationRequestSchema):
             donation = Donation.objects.create(**payload_dict)
             donation.reference = ref
             donation.save()
-            
 
             return 201, data
-        
+
     if payment_client == "PAYPAL":
         client = PaypalClient()
         if payload.frequency == "ONCE":
-            callback_url=f"{settings.FRONTEND_URL}/thankyou"
-            resp=client.create_payment(amount=payload.amount,return_url=callback_url,description=f"donation: amount:{payload.amount}")
+            callback_url = f"{settings.FRONTEND_URL}/thankyou"
+            resp = client.create_payment(amount=payload.amount, return_url=callback_url,
+                                         description=f"donation: amount:{payload.amount}")
             if resp["success"]:
                 donation = Donation.objects.create(**payload_dict)
                 donation.reference = resp["payment_id"]
                 donation.save()
-                data ={
-                    "checkout_url":resp["approval_url"]
+                data = {
+                    "checkout_url": resp["approval_url"]
                 }
                 return 201, data
             return 400, ErrorResponse(message="An error occured", code="400")
         elif payload.frequency == "MONTHLY":
-            resp=client.subcription_payment(amount=payload.amount,return_url=f"{settings.FRONTEND_URL}/thankyou")
+            resp = client.subcription_payment(amount=payload.amount, return_url=f"{settings.FRONTEND_URL}/thankyou")
             if resp["success"]:
                 donation = Donation.objects.create(**payload_dict)
                 print(resp["token"])
                 donation.reference = resp["token"]
                 donation.save()
-                data ={
-                    "checkout_url":resp["approval_url"]
+                data = {
+                    "checkout_url": resp["approval_url"]
                 }
                 return 201, data
             return 400, ErrorResponse(message="An error occured", code="400")
-        return 404, ErrorResponse(message="Not yet implemented", code=404)    
+        return 404, ErrorResponse(message="Not yet implemented", code=404)
     else:
-        return 404, ErrorResponse(message="Invalid payment method", code=404)   
+        return 404, ErrorResponse(message="Invalid payment method", code=404)
 
-@router.get("/execute_paypal/payment", auth=None,response={200:dict, 400:ErrorResponse, 404:ErrorResponse, 500:ErrorResponse})
-def execute_payment(request,payer_id:str=None,payment_id:str=None, token:str=None):
+
+@router.get("/execute_paypal/payment", auth=None,
+            response={200: dict, 400: ErrorResponse, 404: ErrorResponse, 500: ErrorResponse})
+def execute_payment(request, payer_id: str = None, payment_id: str = None, token: str = None):
     """
         execute paypal payment 
     """
     try:
-        client= PaypalClient()
+        client = PaypalClient()
         print(token)
-        resp = client.execute_payment_or_subscription(payment_id=payment_id,payer_id=payer_id, token=token)
+        resp = client.execute_payment_or_subscription(payment_id=payment_id, payer_id=payer_id, token=token)
         if resp["success"]:
             donation = None
             if payer_id and payment_id:
@@ -151,7 +148,7 @@ def execute_payment(request,payer_id:str=None,payment_id:str=None, token:str=Non
                 if donation and donation.status == donation.DonationStatus.COMPLETED:
                     return 400, ErrorResponse(message="Donation already complete", code=400)
             if donation:
-                donation.status= Donation.DonationStatus.COMPLETED
+                donation.status = Donation.DonationStatus.COMPLETED
                 if not payer_id and not payment_id:
                     donation.agreement_id = resp["agreement_id"]
                 donation.save()
@@ -159,40 +156,41 @@ def execute_payment(request,payer_id:str=None,payment_id:str=None, token:str=Non
                     donation.project.amount_raised += donation.amount
                     donation.project.update_progress()
                     donation.project.save()
-                return 200, {"message":"Payment execute successfully"}
+                return 200, {"message": "Payment execute successfully"}
             else:
-                return 404, ErrorResponse(message="Donation not found",detail=str(resp), code=404)
+                return 404, ErrorResponse(message="Donation not found", detail=str(resp), code=404)
         return 400, ErrorResponse(message="AN ERROR OCCURED", code="400")
     except Exception as e:
-        raise e
-        # return 500, ErrorResponse(message="An error occured", detail=str(e), code=500)
-            
+        print("the error in execute", str(e))
+        return 500, ErrorResponse(message="An error occured", detail=str(e), code=500)
 
-@router.get("/donation/{donation_id}", response={200:DonationResponse, 400:ErrorResponse, 500:ErrorResponse})
-def donation(request,donation_id:int):
+
+@router.get("/donation/{donation_id}", response={200: DonationResponse, 400: ErrorResponse, 500: ErrorResponse})
+def donation(request, donation_id: int):
     """
     donation details
     """
 
     try:
         donation = Donation.objects.get(id=donation_id)
-        return 200,DonationResponse(data=donation)
+        return 200, DonationResponse(data=donation)
     except Exception as e:
         return 500, ErrorResponse(message="An error occured while retrieving donation details", detail=str(e))
     except Donation.DoesNotExist:
-        return 400, ErrorResponse(message="Donation not found", detail="The donation with the provided ID does not exist.")
+        return 400, ErrorResponse(message="Donation not found",
+                                  detail="The donation with the provided ID does not exist.")
 
 
 @router.get("/donations", response={200: DonationListResponse})
-def list_donations(request, filters: DonationFilter = Query(...), page:int =1, page_size:int=10):
-    
-    
+def list_donations(request, filters: DonationFilter = Query(...), page: int = 1, page_size: int = 10):
     donations_qs = Donation.objects.all().order_by("-created_at")
     if filters.search:
-        donations_qs = donations_qs.filter(Q(donor_full_name__icontains=filters.search)| Q(donor_email__icontains=filters.search) | Q(project__title__icontains=filters.search))
+        donations_qs = donations_qs.filter(
+            Q(donor_full_name__icontains=filters.search) | Q(donor_email__icontains=filters.search) | Q(
+                project__title__icontains=filters.search))
 
     if filters.frequency:
-        donations_qs= donations_qs.filter(frequency__icontains=filters.frequency)
+        donations_qs = donations_qs.filter(frequency__icontains=filters.frequency)
     if filters.status:
         status = filters.status.upper()
         donations_qs = donations_qs.filter(status__icontains=status)
@@ -224,9 +222,9 @@ def paystack_webhook(request):
         secret = os.environ.get("PAYSTACK_SECRET_KEY", "")
         hash = PaystackClient.calculate_hmac(request.body, secret)
         if (
-            hash == headers.get("X-Paystack-Signature")
-            and data.get("status") == "success"
-            and data.get("gateway_response") in ["Successful", "Approved", "[Test] Approved"]
+                hash == headers.get("X-Paystack-Signature")
+                and data.get("status") == "success"
+                and data.get("gateway_response") in ["Successful", "Approved", "[Test] Approved"]
         ):
             return True
         return False
@@ -271,9 +269,6 @@ def donation_metric(request):
     }
 
 
-
-
-
 @router.post("/paypal/webhook", auth=None)
 def paypal_webhook(request):
     payload = request.body.decode("utf-8")
@@ -291,11 +286,9 @@ def paypal_webhook(request):
 
     client = PaypalClient()
 
-   
     if not client.verify_webhook_signature(verification_data):
         print(f"Webhook verification failed: {verification_data}")
         return Response({}, status=400)
-
 
     event = json.loads(payload)
     event_type = event.get("event_type")
@@ -328,3 +321,4 @@ def paypal_webhook(request):
                     original_donation.project.save()
 
     return Response({}, status=200)
+
