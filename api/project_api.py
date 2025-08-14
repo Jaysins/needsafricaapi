@@ -52,7 +52,8 @@ def get_project(request, project_id: int):
 
 
 @router.post("/", response={201: ProjectResponse, 400: ErrorResponse})
-def create_project(request, payload: ProjectRequestSchema, cover_photo: UploadedFile = File(default=None)):
+def create_project(request, payload: ProjectRequestSchema,
+                   cover_photo: UploadedFile = File(default=None)):
     try:
         project = Project.objects.create(**payload.dict())
         if cover_photo:
