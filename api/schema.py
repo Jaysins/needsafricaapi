@@ -17,6 +17,7 @@ class LoginSchema(Schema):
     password: str | None = None
 
 
+
 class LoginResponse(Schema):
     user: UserSchema
     access_token: str
@@ -29,10 +30,12 @@ class RegisterSchema(Schema):
     password: str
 
 
+
 class DonationSchema(ModelSchema):
     class Meta:
         model = Donation
         fields = '__all__'
+
 
 
 class DonationRequestSchema(Schema):
@@ -45,11 +48,13 @@ class DonationRequestSchema(Schema):
     currency: Literal['USD', 'NGN'] | None = None
 
 
+
 class DonationFilter(FilterSchema):
     search: str | None = None
     frequency: str | None = None
     status: str | None = None
     payment_method: str | None = None
+
 
 
 class DonationResponse(BaseResponseSchema):
@@ -67,9 +72,11 @@ class DonationListResponse(BaseResponseSchema):
 class ProjectPhotoSchema(ModelSchema):
     image: str | None = None
 
+
     class Meta:
         model = ProjectPhoto
         fields = ["image", "name", "deliver_date"]
+
 
 
 class AddProjectPhoto(Schema):
@@ -80,9 +87,11 @@ class AddProjectPhoto(Schema):
 class ProjectSchema(ModelSchema):
     photos: List[ProjectPhotoSchema] | None = None
 
+
     class Meta:
         model = Project
         fields = '__all__'
+
 
 
 class ProjectRequestSchema(Schema):
@@ -97,10 +106,14 @@ class ProjectRequestSchema(Schema):
     currency: Literal['USD', 'NGN'] | None = None
     receiving_donation: bool | None = None
     donation_reason: str | None = None
+    beneficiary_count: int | None = None
+    impact_phrase: str | None = None
+    impact_count: int | None = None
 
 
 class ProjectResponse(BaseResponseSchema):
     data: ProjectSchema | None = None
+
 
 
 class ProjectListSchema(BaseResponseSchema):
@@ -111,11 +124,11 @@ class ProjectListSchema(BaseResponseSchema):
     data: List[ProjectSchema]
 
 
+
 class ProjectFilter(FilterSchema):
     search: str | None = None
     category: str | None = None
     status: str | None = None
-
 
 class VolunteerRequestSchema(Schema):
     first_name: str

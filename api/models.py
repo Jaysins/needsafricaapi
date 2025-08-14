@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 
 
+
 # Create your models here.
 
 class User(AbstractUser, BaseDBModel):
@@ -14,7 +15,6 @@ class User(AbstractUser, BaseDBModel):
 
     def __str__(self):
         return self.username
-
 
 class Project(BaseDBModel):
     CURRENCY_CHOICES = [
@@ -51,6 +51,9 @@ class Project(BaseDBModel):
         ('CANCELLED', 'CANCELLED'),
     ])
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
+    beneficiary_count = models.IntegerField(default=0)
+    impact_count = models.IntegerField(default=0)
+    impact_phrase = models.CharField(max_length=150, blank=True, null=True)
 
     def update_progress(self):
         if self.target_amount > 0:
@@ -72,8 +75,10 @@ class ProjectPhoto(BaseDBModel):
     image = models.ImageField(upload_to='project_photos/')
     deliver_date = models.DateField(blank=True, null=True)
 
+
     def __str__(self):
         return f"Photo for {self.project.title}"
+
 
 
 class Donation(BaseDBModel):
@@ -103,8 +108,10 @@ class Donation(BaseDBModel):
     reference = models.CharField(max_length=200, blank=True, null=True)
     agreement_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
 
+
     def __str__(self):
         return f"{self.donor_full_name} donated {self.amount} {self.currency.upper()}"
+
 
 
 class Volunteer(models.Model):
