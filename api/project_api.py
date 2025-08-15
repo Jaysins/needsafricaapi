@@ -55,6 +55,7 @@ def get_project(request, project_id: int):
 def create_project(request, payload: ProjectRequestSchema,
                    cover_photo: UploadedFile = File(default=None)):
     try:
+
         project = Project.objects.create(**payload.dict())
         if cover_photo:
             project.cover_image = cover_photo

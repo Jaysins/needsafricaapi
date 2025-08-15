@@ -4,7 +4,6 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 
 
-
 # Create your models here.
 
 class User(AbstractUser, BaseDBModel):
@@ -15,6 +14,7 @@ class User(AbstractUser, BaseDBModel):
 
     def __str__(self):
         return self.username
+
 
 class Project(BaseDBModel):
     CURRENCY_CHOICES = [
@@ -38,7 +38,8 @@ class Project(BaseDBModel):
     remaining_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     donation_reason = models.CharField(max_length=150, blank=True, null=True)
 
-    milestones = models.TextField(help_text="List of completed actions, as bullet points", blank=True, null=True)
+    milestones = models.JSONField(help_text="List of completed actions, as bullet points", blank=True, null=True,
+                                  default=str)
 
     location = models.CharField(max_length=150, blank=True, null=True)
     cover_image = models.ImageField(upload_to='project_covers/', blank=True, null=True)
@@ -75,10 +76,8 @@ class ProjectPhoto(BaseDBModel):
     image = models.ImageField(upload_to='project_photos/')
     deliver_date = models.DateField(blank=True, null=True)
 
-
     def __str__(self):
         return f"Photo for {self.project.title}"
-
 
 
 class Donation(BaseDBModel):
@@ -108,10 +107,8 @@ class Donation(BaseDBModel):
     reference = models.CharField(max_length=200, blank=True, null=True)
     agreement_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
 
-
     def __str__(self):
         return f"{self.donor_full_name} donated {self.amount} {self.currency.upper()}"
-
 
 
 class Volunteer(models.Model):
