@@ -25,7 +25,7 @@ router = Router(tags=["Donations"])
 def create_donation(request, payload: DonationRequestSchema):
     print(payload)
     payload_dict = payload.model_dump()
-    payment_client = payload_dict.pop("payment_client")
+    payment_client = payload_dict["payment_client"]
 
     callback_url = f"{settings.FRONTEND_URL}"
 
@@ -321,4 +321,3 @@ def paypal_webhook(request):
                     original_donation.project.save()
 
     return Response({}, status=200)
-
