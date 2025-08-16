@@ -126,3 +126,4 @@ def delete_project_photo(request, photo_id: int):
         return 200, BaseResponseSchema(message="Photo deleted successfully")
     except ProjectPhoto.DoesNotExist:
         return 404, ErrorResponse(message="Photo not found", code=404)
+

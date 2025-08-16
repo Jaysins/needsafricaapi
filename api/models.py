@@ -39,7 +39,9 @@ class Project(BaseDBModel):
     donation_reason = models.CharField(max_length=150, blank=True, null=True)
 
     milestones = models.JSONField(help_text="List of completed actions, as bullet points", blank=True, null=True,
-                                  default=str)
+                                  default=list)
+    goals = models.JSONField(help_text="List of completed actions, as bullet points", blank=True, null=True,
+                             default=list)
 
     location = models.CharField(max_length=150, blank=True, null=True)
     cover_image = models.ImageField(upload_to='project_covers/', blank=True, null=True)
@@ -99,6 +101,7 @@ class Donation(BaseDBModel):
     donor_email = models.EmailField()
     donor_full_name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    converted_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES)
     frequency = models.CharField(max_length=150, default=FrequnceyChoice.ONCE.value, choices=FrequnceyChoice.choices)
     status = models.CharField(default=DonationStatus.PENDING.value, max_length=20, choices=DonationStatus.choices)
