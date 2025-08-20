@@ -9,14 +9,19 @@ from typing import List
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
-from .models import Donation, Project
-from .schema import (
-    DonationResponse, ErrorResponse, DonationRequestSchema, DonationListResponse, DonationFilter
-)
 from core.clients import PaypalClient, PaystackClient
 from django.core.paginator import Paginator, EmptyPage
 from django.utils import timezone
 from django.db.models import Sum
+from decimal import Decimal,ROUND_HALF_UP
+
+from .models import Donation, Project, ExchangeRate
+from .schema import (
+    DonationResponse, ErrorResponse, DonationRequestSchema, DonationListResponse, DonationFilter,ExchangeRatResponse,UpdateExchangeRateRequest
+)
+
+from api.utils import conversion
+
 
 router = Router(tags=["Donations"])
 
@@ -153,9 +158,13 @@ def execute_payment(request, payer_id: str = None, payment_id: str = None, token
                     donation.agreement_id = resp["agreement_id"]
                 donation.save()
                 if donation.project:
-                    donation.project.amount_raised += donation.amount
+                    converted_amount = conversion(to_currency=donation.project.currency, from_currency=donation.currency, amount=donation.amount)
+                    print(converted_amount)
+                    donation.project.amount_raised += Decimal(converted_amount).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    donation.converted_amount = converted_amount
                     donation.project.update_progress()
                     donation.project.save()
+                    donation.save()
                 return 200, {"message": "Payment execute successfully"}
             else:
                 return 404, ErrorResponse(message="Donation not found", detail=str(resp), code=404)
@@ -241,7 +250,11 @@ def paystack_webhook(request):
                 donation.status = Donation.DonationStatus.COMPLETED
                 donation.save()
                 if donation.project:
-                    donation.project.amount_raised += donation.amount
+                    converted_amount = conversion(donation.project.currency, donation.currency, donation.amount)
+                    donation.project.amount_raised += Decimal(converted_amount).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    donation.converted_amount = conversion(donation.project.currency, donation.currency, donation.amount)
+                    donation.save()
+                    donation.project.save()
                     donation.project.update_progress()
                 return Response({}, status=200)
         return Response({}, status=400)
@@ -302,7 +315,7 @@ def paypal_webhook(request):
         if agreement_id:
             original_donation = Donation.objects.filter(agreement_id=agreement_id).first()
             if original_donation:
-                Donation.objects.create(
+                donation = Donation.objects.create(
                     project=original_donation.project,
                     donor_email=original_donation.donor_email,
                     donor_full_name=original_donation.donor_full_name,
@@ -315,9 +328,51 @@ def paypal_webhook(request):
                     payment_plan_code=original_donation.payment_plan_code,
                     payment_client=original_donation.payment_client,
                 )
+                converted_amount = conversion(to_currency=original_donation.project.currency, from_currency=original_donation.currency, amount=original_donation.amount)
+                donation.converted_amount = converted_amount
+                donation.save()
                 if original_donation.project:
-                    original_donation.project.amount_raised += float(amount)
+                    converted_amount = conversion(original_donation.project.currency, original_donation.currency, original_donation.amount)
+                    original_donation.project.amount_raised +=Decimal(converted_amount).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
                     original_donation.project.update_progress()
                     original_donation.project.save()
 
     return Response({}, status=200)
+
+
+@router.get(
+    "/exchange_rate",
+    auth=None,
+    response={200: ExchangeRatResponse, 400: ErrorResponse, 404: ErrorResponse, 500: ErrorResponse},
+)
+def exchange_rate(request):
+    """Get exchange rate"""
+
+    rate, created = ExchangeRate.objects.get_or_create(
+        id=1,  
+        defaults={"USD": 1600}  
+    )
+
+    if created:
+        rate.save()
+
+    return 200, ExchangeRatResponse(data=rate)
+
+
+
+@router.post(
+    "/exchange_rate/update",
+    auth=None,
+    response={200: ExchangeRatResponse, 400: ErrorResponse, 500: ErrorResponse},
+)
+def update_exchange_rate(request, payload: UpdateExchangeRateRequest):
+    """Update exchange rate"""
+
+    rate, created = ExchangeRate.objects.get_or_create(
+        id=1, defaults={"USD": payload.USD}
+    )
+
+    rate.USD = payload.USD
+    rate.save()  
+
+    return 200, ExchangeRatResponse(data=rate)

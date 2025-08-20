@@ -2,7 +2,7 @@ from ninja import Schema, ModelSchema, FilterSchema
 from datetime import date, datetime
 from typing import Optional, List, Any, Literal
 from core.schema import BaseResponseSchema, ErrorResponse
-from .models import (Donation, User, Project, ProjectPhoto, Volunteer)
+from .models import (Donation, User, Project, ProjectPhoto, Volunteer, ExchangeRate)
 from core.clients import PaystackClient
 
 
@@ -140,3 +140,20 @@ class VolunteerSchema(ModelSchema):
 
 class VolunteerResponse(BaseResponseSchema):
     data: VolunteerSchema | None = None
+
+class ExchangeRateSchema(ModelSchema):
+    class Meta:
+        model = ExchangeRate
+        fields = ['USD','NGN']
+
+class ExchangeRatResponse(Schema):
+    data: ExchangeRateSchema | None = None
+
+class UpdateExchangeRateRequest(Schema):
+    USD: float 
+
+class ProjectStats(Schema):
+    total : int | None = None
+    completed : int | None = None
+    active: int | None = None
+    draft: int | None = None

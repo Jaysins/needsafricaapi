@@ -62,6 +62,10 @@ class Project(BaseDBModel):
         if self.target_amount > 0:
             self.percentage_funded = float((self.amount_raised / self.target_amount) * 100)
             self.remaining_amount = self.target_amount - self.amount_raised
+            if self.amount_raised >= self.target_amount:
+                self.status = "COMPLETED"
+                self.remaining_amount = Decimal("0.00")
+                self.save()
         else:
             self.percentage_funded = 0.0
             self.remaining_amount = Decimal("0.00")
@@ -140,3 +144,20 @@ class Volunteer(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.role}"
+    
+
+class ExchangeRate(BaseDBModel):
+    USD = models.DecimalField(decimal_places=2, max_digits=10, default=1600)  
+    NGN = models.DecimalField(decimal_places=6, max_digits=10, default=0.00065)  
+
+    def save(self, *args, **kwargs):
+        if self.USD:
+            self.NGN = 1 / float(self.USD)
+        elif self.NGN:
+            self.USD = 1 / float(self.NGN)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"1 USD = {self.USD} NGN | 1 NGN = {self.NGN} USD"
+

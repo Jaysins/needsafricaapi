@@ -4,7 +4,7 @@ from typing import List
 from .models import Project, ProjectPhoto
 from django.db.models import Q
 from .schema import (
-    ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter, AddProjectPhoto
+    ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter, AddProjectPhoto, ProjectStats
 )
 from core.schema import BaseResponseSchema
 from django.core.paginator import Paginator, EmptyPage
@@ -114,8 +114,7 @@ def add_project_photos(request, project_id: int, payload: AddProjectPhoto, image
     except Project.DoesNotExist:
         return 404, ErrorResponse(message="Project not found", code=404)
     except Exception as e:
-        raise e
-        # return 400, ErrorResponse(message="Error adding photos", detail=str(e), code=400)
+        return 400, ErrorResponse(message="Error adding photos", detail=str(e), code=400)
 
 
 @router.delete("/photos/{photo_id}", response={200: BaseResponseSchema, 404: ErrorResponse})
@@ -127,3 +126,22 @@ def delete_project_photo(request, photo_id: int):
     except ProjectPhoto.DoesNotExist:
         return 404, ErrorResponse(message="Photo not found", code=404)
 
+@router.get("/project_stats/", auth=None, response={200:ProjectStats, 400:ErrorResponse,404:ErrorResponse, 500:ErrorResponse})
+def get_stats(request):
+    """
+    total, active, draft, completed
+    """
+
+    qs = Project.objects.all()
+    total_ = qs.count()
+    completed =  qs.filter(status="COMPLETED").count()
+    active = qs.filter(status="ACTIVE").count()
+    draft = qs.filter(status="DRAFT").count()
+
+    data = {
+        "total":total_,
+        "completed":completed,
+        "active":active,
+        "draft":draft
+    }
+    return 200, ProjectStats(**data)
