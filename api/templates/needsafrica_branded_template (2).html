@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeedsAfrica Project Impact Brief</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            line-height: 1.5;
+            color: #2d2d2d;
+            background: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+        }
+
+        /* Header Section */
+        .header {
+            background: #1e784c;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #fc8424;
+        }
+
+        .logo-section {
+            margin-bottom: 20px;
+        }
+
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background: #fc8424;
+            border-radius: 8px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .meta {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Content Sections */
+        .content {
+            padding: 0;
+        }
+
+        .section {
+            padding: 25px 30px;
+            border-bottom: 2px solid #f5f5f5;
+            page-break-inside: avoid;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fc8424;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e784c;
+            margin: 0;
+            padding-left: 15px;
+        }
+
+        .section-icon {
+            width: 35px;
+            height: 35px;
+            background: #fc8424;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Project Summary */
+        .project-summary {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #fc8424;
+        }
+
+        /* Fundraising Stats */
+        .fundraising-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 18px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card:nth-child(1),
+        .stat-card:nth-child(3),
+        .stat-card:nth-child(5) {
+            border-color: #fc8424;
+        }
+
+        .stat-card:nth-child(2),
+        .stat-card:nth-child(4) {
+            border-color: #1e784c;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e784c;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e784c;
+            margin-bottom: 8px;
+        }
+
+        .progress-container {
+            background: #e9ecef;
+            height: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fc8424 0%, #1e784c 100%);
+            width: 67.5%;
+            border-radius: 6px;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            margin-top: 3px;
+        }
+
+        /* Lists */
+        .content-list {
+            list-style: none;
+            margin: 12px 0;
+        }
+
+        .content-list li {
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border-left: 4px solid #fc8424;
+            border-radius: 0 6px 6px 0;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .content-list li::before {
+            content: "●";
+            color: #fc8424;
+            font-size: 14px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .milestones-list li::before {
+            content: "✓";
+            color: #1e784c;
+            font-size: 14px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        /* Subsection Headers */
+        .subsection-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e784c;
+            margin: 18px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .subsection-header i {
+            color: #fc8424;
+            margin-right: 8px;
+        }
+
+        /* Donation Cards */
+        .donation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .donation-card {
+            background: white;
+            border: 2px solid #1e784c;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .donation-card:nth-child(1),
+        .donation-card:nth-child(3) {
+            border-color: #fc8424;
+        }
+
+        .donation-card:nth-child(2),
+        .donation-card:nth-child(4) {
+            border-color: #1e784c;
+        }
+
+        .donation-amount {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1e784c;
+            margin-bottom: 8px;
+        }
+
+        .donation-card:nth-child(1) .donation-amount,
+        .donation-card:nth-child(3) .donation-amount {
+            color: #fc8424;
+        }
+
+        .donation-description {
+            font-size: 12px;
+            line-height: 1.3;
+            color: #555;
+        }
+
+        /* Transparency Section */
+        .transparency-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .transparency-list li {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #1e784c;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .transparency-list li::before {
+            content: "🛡";
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+
+        .footer-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fc8424;
+        }
+
+        .contact-info {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .contact-item {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .contact-item i {
+            color: #fc8424;
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .website {
+            font-size: 16px;
+            color: #fc8424;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* PDF Specific Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: none;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .fundraising-stats {
+                page-break-inside: avoid;
+            }
+            
+            .donation-grid {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .fundraising-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .donation-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .section {
+                padding: 15px 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo-placeholder">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+            <h1>NeedsAfrica Project Impact Brief<br>{{ project.title }}</h1>
+            <div class="meta">
+                <i class="fas fa-calendar-alt"></i>
+                Updated: {{ generated_at }}
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h2>Project Summary</h2>
+                </div>
+                <div class="project-summary">
+                    {{ project.summary }}
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2>Fundraising Overview</h2>
+                </div>
+
+                <div class="fundraising-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${{ project.target_amount_display }} {{ project.currency }}</div>
+                        <div class="stat-label">Target Goal</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${{ project.amount_raised_display }} {{ project.currency }}</div>
+                        <div class="stat-label">Raised So Far</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ project.percentage_funded_display }}</div>
+                        <div class="stat-label">Funded</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${{ project.remaining_amount_display }} {{ project.currency }}</div>
+                        <div class="stat-label">Remaining</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ project.deadline_display }}</div>
+                        <div class="stat-label">Deadline</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">Campaign Progress</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: {{ project.percentage_funded }}%;"></div>
+                    </div>
+                    <div class="progress-text">{{ project.percentage_funded_display }} of goal achieved</div>
+                </div>
+
+                <div class="subsection-header">
+                    <i class="fas fa-bullseye"></i>
+                    Project Goals
+                </div>
+                <ul class="content-list">
+                    {% if project.goals %}
+                        {% for g in project.goals %}
+                            <li>{{ g }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Project goals will be listed here</li>
+                    {% endif %}
+                </ul>
+
+                <div class="subsection-header">
+                    <i class="fas fa-check-circle"></i>
+                    Completed Milestones
+                </div>
+                <ul class="content-list milestones-list">
+                    {% if project.milestones %}
+                        {% for m in project.milestones %}
+                            <li>{{ m }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Completed milestones will be listed here</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h2>Donation Impact Levels</h2>
+                </div>
+
+                <div class="donation-grid">
+                    <div class="donation-card">
+                        <div class="donation-amount">$50</div>
+                        <div class="donation-description">Clears one laptop through customs and handles import fees</div>
+                    </div>
+                    <div class="donation-card">
+                        <div class="donation-amount">$100</div>
+                        <div class="donation-description">Covers one student's complete digital setup including accessories</div>
+                    </div>
+                    <div class="donation-card">
+                        <div class="donation-amount">$500</div>
+                        <div class="donation-description">Powers an entire classroom with laptops and training materials</div>
+                    </div>
+                    <div class="donation-card">
+                        <div class="donation-amount">$1,500</div>
+                        <div class="donation-description">Sponsors complete shipping and delivery logistics for one school</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h2>Transparency & Accountability</h2>
+                </div>
+
+                <ul class="transparency-list">
+                    <li>100% of donations used directly for project execution - no administrative overhead</li>
+                    <li>Detailed post-delivery impact report with measurable outcomes and statistics</li>
+                    <li>Complete photo documentation, school feedback, and detailed financial breakdown</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-title">Contact & Updates</div>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    info@needsafrica.org
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    +1 832-495-5157
+                </div>
+            </div>
+            <a href="https://www.needsafrica.org" class="website">www.needsafrica.org</a>
+        </div>
+    </div>
+</body>
+</html>

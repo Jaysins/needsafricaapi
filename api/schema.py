@@ -2,7 +2,7 @@ from ninja import Schema, ModelSchema, FilterSchema
 from datetime import date, datetime
 from typing import Optional, List, Any, Literal
 from core.schema import BaseResponseSchema, ErrorResponse
-from .models import (Donation, User, Project, ProjectPhoto, Volunteer, ExchangeRate)
+from .models import (Donation, User, Project, ProjectPhoto, Volunteer, ExchangeRate, Subscription)
 from core.clients import PaystackClient
 
 
@@ -29,7 +29,24 @@ class RegisterSchema(Schema):
     password: str
 
 
+class ProjectPhotoSchema(ModelSchema):
+    image: str | None = None
+
+    class Meta:
+        model = ProjectPhoto
+        fields = ["image", "name", "deliver_date"]
+
+
+class ProjectSchema(ModelSchema):
+    photos: List[ProjectPhotoSchema] | None = None
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+
 class DonationSchema(ModelSchema):
+
     class Meta:
         model = Donation
         fields = '__all__'
@@ -64,25 +81,9 @@ class DonationListResponse(BaseResponseSchema):
     data: List[DonationSchema]
 
 
-class ProjectPhotoSchema(ModelSchema):
-    image: str | None = None
-
-    class Meta:
-        model = ProjectPhoto
-        fields = ["image", "name", "deliver_date"]
-
-
 class AddProjectPhoto(Schema):
     name: str | None = None
     deliver_date: datetime | None = None
-
-
-class ProjectSchema(ModelSchema):
-    photos: List[ProjectPhotoSchema] | None = None
-
-    class Meta:
-        model = Project
-        fields = '__all__'
 
 
 class ProjectRequestSchema(Schema):
@@ -141,19 +142,67 @@ class VolunteerSchema(ModelSchema):
 class VolunteerResponse(BaseResponseSchema):
     data: VolunteerSchema | None = None
 
+
+class VolunteerFilter(FilterSchema):
+    search: str | None = None
+    country: str | None = None
+    role: str | None = None
+    availability: str | None = None
+    status: bool | None = None  # if you track active/inactive volunteers
+
+
+class VolunteerListSchema(BaseResponseSchema):
+    page: int
+    total: int
+    page_size: int
+    total_pages: int
+    data: List[VolunteerSchema]
+
+
 class ExchangeRateSchema(ModelSchema):
     class Meta:
         model = ExchangeRate
-        fields = ['USD','NGN']
+        fields = "__all__"
+
 
 class ExchangeRatResponse(Schema):
     data: ExchangeRateSchema | None = None
 
+
 class UpdateExchangeRateRequest(Schema):
-    USD: float 
+    usd_to_ngn_rate: float
+
 
 class ProjectStats(Schema):
-    total : int | None = None
-    completed : int | None = None
+    total: int | None = None
+    completed: int | None = None
     active: int | None = None
     draft: int | None = None
+
+
+class SubscriptionSchema(ModelSchema):
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+
+
+class SubscriptionListSchema(BaseResponseSchema):
+    page: int
+    total: int
+    page_size: int
+    total_pages: int
+    data: List[SubscriptionSchema]
+
+
+class SubscriptionFilter(FilterSchema):
+    search: str | None = None
+    category: str | None = None
+    status: str | None = None
+
+
+class SubscriptionRequestSchema(Schema):
+    email: str
+
+
+class SubscriptionResponse(BaseResponseSchema):
+    data: SubscriptionSchema | None = None

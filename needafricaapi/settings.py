@@ -22,7 +22,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -33,7 +32,6 @@ SECRET_KEY = 'django-insecure-bs$*r4@1-_wxbe)$-gc$=!hu&es=h^w3+m6b9ylj4ha^bf-qm@
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -93,9 +91,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'needafricaapi.wsgi.application'
 
-
 # Database
-#https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # DATABASES = {
 #     'default': {
@@ -107,8 +104,8 @@ WSGI_APPLICATION = 'needafricaapi.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'), 
-        conn_max_age=600,                  
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
         ssl_require=False
     )
 }
@@ -131,7 +128,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -143,24 +139,19 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'static/media'
-STATIC_ROOT = os.path.join(BASE_DIR,'staticfile')
-STATIC_ROOT = BASE_DIR / 'staticfile'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
- 
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -168,13 +159,26 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'api.User'
 
-CORS_ALLOW_ALL_ORIGINS= True
+CORS_ALLOW_ALL_ORIGINS = True
 
-PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "sk_test_d49df967510b069d21c786771151c1c89dd27409")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
-PAYSTACK_API_URL= os.getenv("PAYSTACK_API_URL")
-FRONTEND_URL = "https://needsafrica.org"
-PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_CLIENT_ID=os.getenv("PAYPAL_CLIENT_ID")
+PAYSTACK_API_URL = os.getenv("PAYSTACK_API_URL", "https://api.paystack.co/")
+FRONTEND_URL = "http://localhost:8080"
+PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET", "EHtImceKdcpx6KRJlziDVnIkQEnVCpxd1T-pxBMh4I0-pGqiqS5oR_enOxAgV8iTmGpZVm3YKfsVxmYi")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "AVMWhfUl05V-avTHs39bFYqlN_HZaRjxVagMwtf_zXXnY2Oa-CDNFkz5p8kZ8Kj_h-Q_e4JgQM7dgXo5")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
 PAYPAL_API_URL = os.getenv("PAYPAL_API_URL")
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "mail.needsafrica.org"
+# EMAIL_PORT = 465
+# EMAIL_USE_TLS = False
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = "no_reply@needsafrica.org"
+# EMAIL_HOST_PASSWORD = "*NS7t4&Whi33Td%n"
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#
+# # Create SSL context that doesn't verify certificates (for development)
+# EMAIL_SSL_CONTEXT = ssl.create_default_context()
+# EMAIL_SSL_CONTEXT.check_hostname = False
+# EMAIL_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
