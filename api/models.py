@@ -338,9 +338,7 @@ class Donation(BaseDBModel):
             self.payment_completed_at = timezone.now()
 
         # Calculate converted amount if needed
-        if (self.project and
-                self.currency != self.project.currency and
-                not self.project_currency_amount):
+        if self.project:
             self.convert_to_project_currency()
 
         super().save(*args, **kwargs)
@@ -349,7 +347,6 @@ class Donation(BaseDBModel):
         if (self.status == self.StatusChoices.COMPLETED and
                 self.project):  # Only on creation, not updates
             self.project.add_donation_amount(self.get_project_amount())
-
 
     def convert_to_project_currency(self):
         """Convert donation amount to project currency"""
