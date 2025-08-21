@@ -158,6 +158,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'api.User'
+FRONTEND_URL = "https://needsafrica.org"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
