@@ -161,22 +161,15 @@ AUTH_USER_MODEL = 'api.User'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY", "sk_test_d49df967510b069d21c786771151c1c89dd27409")
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
-PAYSTACK_API_URL = os.getenv("PAYSTACK_API_URL", "https://api.paystack.co/")
+PAYSTACK_API_URL = os.getenv("PAYSTACK_API_URL")
 FRONTEND_URL = "http://localhost:8080"
-PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET", "EHtImceKdcpx6KRJlziDVnIkQEnVCpxd1T-pxBMh4I0-pGqiqS5oR_enOxAgV8iTmGpZVm3YKfsVxmYi")
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "AVMWhfUl05V-avTHs39bFYqlN_HZaRjxVagMwtf_zXXnY2Oa-CDNFkz5p8kZ8Kj_h-Q_e4JgQM7dgXo5")
+PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
 PAYPAL_API_URL = os.getenv("PAYPAL_API_URL")
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = "mail.needsafrica.org"
-# EMAIL_PORT = 465
-# EMAIL_USE_TLS = False
-# EMAIL_USE_SSL = True
-# EMAIL_HOST_USER = "no_reply@needsafrica.org"
-# EMAIL_HOST_PASSWORD = "*NS7t4&Whi33Td%n"
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 #
 # # Create SSL context that doesn't verify certificates (for development)
 # EMAIL_SSL_CONTEXT = ssl.create_default_context()
