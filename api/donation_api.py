@@ -176,7 +176,6 @@ def create_donation(request, payload: DonationRequestSchema):
             payload_dict.update({
                 'amount': payload_dict.pop('amount'),
                 'currency': payload_dict.pop('currency'),
-                'project_id': payload.project_id
             })
 
             # Handle payment processing
