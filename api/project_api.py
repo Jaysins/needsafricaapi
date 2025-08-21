@@ -4,10 +4,16 @@ from typing import List
 from .models import Project, ProjectPhoto
 from django.db.models import Q
 from .schema import (
-    ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter, AddProjectPhoto, ProjectStats
+    ProjectResponse, ProjectListSchema, ErrorResponse, ProjectRequestSchema, ProjectFilter, AddProjectPhoto,
+    ProjectStats
 )
 from core.schema import BaseResponseSchema
 from django.core.paginator import Paginator, EmptyPage
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
+from io import BytesIO
+from datetime import datetime
 
 router = Router(tags=["Projects"])
 
@@ -55,8 +61,10 @@ def get_project(request, project_id: int):
 def create_project(request, payload: ProjectRequestSchema,
                    cover_photo: UploadedFile = File(default=None)):
     try:
-
-        project = Project.objects.create(**payload.dict())
+        payload_dict = payload.dict()
+        if status := payload_dict.get('status'):
+            payload_dict['status'] = status.upper()
+        project = Project.objects.create(**payload_dict)
         if cover_photo:
             project.cover_image = cover_photo
             project.save()
@@ -73,7 +81,10 @@ def update_project(request, project_id: int, payload: ProjectRequestSchema,
     try:
         print(payload)
         project = Project.objects.get(id=project_id)
-        for attr, value in payload.dict(exclude={"photos"}).items():
+        payload_dict = payload.dict(exclude={"photos"})
+        if status := payload_dict.get('status'):
+            payload_dict['status'] = status.upper()
+        for attr, value in payload_dict.items():
             setattr(project, attr, value)
         if cover_photo:
             project.cover_image = cover_photo
@@ -126,7 +137,56 @@ def delete_project_photo(request, photo_id: int):
     except ProjectPhoto.DoesNotExist:
         return 404, ErrorResponse(message="Photo not found", code=404)
 
-@router.get("/project_stats/", auth=None, response={200:ProjectStats, 400:ErrorResponse,404:ErrorResponse, 500:ErrorResponse})
+
+@router.get("/{project_id}/download_report", auth=None)
+def download_project_report(request, project_id: int):
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        return HttpResponse("Not found", status=404)
+
+    # context for template
+    generated_at = datetime.now().strftime("%B %d, %Y")
+    logo_url = request.build_absolute_uri('/static/images/logo.png')  # adjust path
+    cover_url = None
+    if project.cover_image:
+        cover_url = request.build_absolute_uri(project.cover_image.url)
+
+    context = {
+        "project": {
+            "title": project.title,
+            "summary": project.summary,
+            "target_amount": project.target_amount,
+            "amount_raised": project.amount_raised,
+            "percentage_funded": project.percentage_funded,
+            "remaining_amount": project.remaining_amount,
+            "deadline": project.deadline,
+            "goals": project.goals or [],
+            "milestones": project.milestones or [],
+            "currency": project.currency,
+            "cover_image_url": cover_url,
+        },
+        "generated_at": generated_at,
+        "logo_url": logo_url,
+    }
+
+    # render HTML
+    html_string = render_to_string("project_report.html", context, request=request)
+
+    # render to PDF
+    html = HTML(string=html_string, base_url=request.build_absolute_uri('/'))
+    pdf_io = BytesIO()
+    html.write_pdf(pdf_io)
+    pdf_io.seek(0)
+
+    filename = f"NeedsAfrica_Project_Brief_{project.id}.pdf"
+    response = HttpResponse(pdf_io.read(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@router.get("/project_stats/", auth=None,
+            response={200: ProjectStats, 400: ErrorResponse, 404: ErrorResponse, 500: ErrorResponse})
 def get_stats(request):
     """
     total, active, draft, completed
@@ -134,14 +194,14 @@ def get_stats(request):
 
     qs = Project.objects.all()
     total_ = qs.count()
-    completed =  qs.filter(status="COMPLETED").count()
+    completed = qs.filter(status="COMPLETED").count()
     active = qs.filter(status="ACTIVE").count()
     draft = qs.filter(status="DRAFT").count()
 
     data = {
-        "total":total_,
-        "completed":completed,
-        "active":active,
-        "draft":draft
+        "total": total_,
+        "completed": completed,
+        "active": active,
+        "draft": draft
     }
     return 200, ProjectStats(**data)

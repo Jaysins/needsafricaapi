@@ -1,5 +1,5 @@
 from django.conf import settings
-from typing import Dict,Any,Optional
+from typing import Dict, Any, Optional
 from urllib.parse import urlparse, parse_qs
 import logging
 import requests
@@ -8,7 +8,6 @@ import hmac
 import hashlib
 import datetime
 import paypalrestsdk
-
 
 logger = logging.getLevelName(__name__)
 
@@ -22,19 +21,20 @@ class PaymentError(Exception):
 
 class PaystackClient():
     def __init__(self):
-        self.secret_key = os.getenv("PAYSTACK_SECRET_KEY")
+        self.secret_key = settings.PAYSTACK_SECRET_KEY
         self.public_key = settings.PAYSTACK_PUBLIC_KEY
         self.api_url = settings.PAYSTACK_API_URL
         self.client = requests.Session()
-        self.client.headers.update({"Content-Type": "application/json", "Authorization": f"Bearer {self.secret_key}"})
+        self.client.headers.update({"Content-Type": "application/json",
+                                    "Authorization": f"Bearer {self.secret_key}"})
         print(self.secret_key, "secrete key")
         self.headers = {
             'Authorization': f'Bearer {self.secret_key}',
             'Content-Type': 'application/json'
         }
 
-    def initialize_plan(self, payload:Dict[str, Any])-> requests.Response:
-        url =f"{self.api_url}plan"
+    def initialize_plan(self, payload: Dict[str, Any]) -> requests.Response:
+        url = f"{self.api_url}plan"
         try:
             response = self.client.post(url, json=payload)
             response.raise_for_status()
@@ -44,20 +44,18 @@ class PaystackClient():
             print(f"Error initializing payment: {str(e)}")
             raise PaymentError(str(e), "paystack", e)
 
-
     def initialize(self, payload: Dict[str, Any]) -> requests.Response:
-        url= f"{self.api_url}transaction/initialize"
+        url = f"{self.api_url}transaction/initialize"
         try:
             response = self.client.post(url, json=payload)
             print(response.json())
             response.raise_for_status()
-            
+
             return response.json()
         except requests.exceptions.RequestException as e:
             # logger.error(f"Error initializing payment: {str(e)}")
             print(f"Error initializing payment: {str(e)}")
             raise PaymentError(str(e), "paystack", e)
-        
 
     def verify_transaction(self, reference: str) -> Dict[str, Any]:
         try:
@@ -68,11 +66,10 @@ class PaystackClient():
         except requests.exceptions.RequestException as e:
             logger.error(f"Error verifying transaction: {e}")
             raise PaymentError(str(e), "paystack", e)
-        
+
     @staticmethod
     def calculate_hmac(data: bytes, secret: str) -> str:
         return hmac.new(secret.encode("utf-8"), data, digestmod=hashlib.sha512).hexdigest()
-
 
 
 class PaypalClient():
@@ -86,7 +83,7 @@ class PaypalClient():
         }
         print(settings.PAYPAL_API_URL)
         paypalrestsdk.configure({
-            "mode": "sandbox", 
+            "mode": "sandbox",
             "client_id": self.client_id,
             "client_secret": self.secret_key
         })
@@ -99,7 +96,6 @@ class PaypalClient():
         print(response.text)
         response.raise_for_status()
         return response.json()['access_token']
-    
 
     def verify_webhook_signature(self, verification_data):
         access_token = self.get_access_token()
@@ -151,9 +147,10 @@ class PaypalClient():
             return {"success": True, "approval_url": approval_url, "payment_id": payment.id}
         else:
             return {"success": False, "error": payment.error}
-        
-    def subcription_payment(self,amount, currency="USD", return_url=None, cancel_url=None,name="", description="NeedsAfrica donation"):
-        plan=paypalrestsdk.BillingPlan({
+
+    def subcription_payment(self, amount, currency="USD", return_url=None, cancel_url=None, name="",
+                            description="NeedsAfrica donation"):
+        plan = paypalrestsdk.BillingPlan({
             "name": f"Monthly Donation Plan ${amount}",
             "description": f"{description}",
             "type": "INFINITE",
@@ -174,7 +171,7 @@ class PaypalClient():
                 "setup_fee": {"value": amount, "currency": "USD"}
             }
         })
-        
+
         if plan.create():
             approval_url = None
             plan.activate()
@@ -187,31 +184,28 @@ class PaypalClient():
                 "plan": {"id": plan.id},
                 "payer": {"payment_method": "paypal"}
             })
-            
 
             if agreement.create():
-                print("Agreement object",agreement)
-               
-            
+                print("Agreement object", agreement)
+
                 # return {"error": "Failed to create agreement", "details": agreement.error}
                 for link in agreement.links:
                     if link.rel == "approval_url":
                         approval_url = str(link.href)
                         token = parse_qs(urlparse(approval_url).query).get('token', [None])[0]
                         print("Agreement token:", token)
-                        return {"success":True, "approval_url":approval_url, "token":token}
-        
-    def execute_payment_or_subscription(self,payment_id, payer_id, token):
+                        return {"success": True, "approval_url": approval_url, "token": token}
+
+    def execute_payment_or_subscription(self, payment_id, payer_id, token):
         if payer_id:
             payment = paypalrestsdk.Payment.find(payment_id)
-            payment =payment.execute({"payer_id": payer_id})
+            payment = payment.execute({"payer_id": payer_id})
             if payment:
                 return {"success": True}
             return {"success": False}
-        else: 
+        else:
             payment = paypalrestsdk.BillingAgreement.execute(token)
             print(payment)
             if payment:
-                return {"success":True, "agreement_id":payment.id}
+                return {"success": True, "agreement_id": payment.id}
             return False
-
