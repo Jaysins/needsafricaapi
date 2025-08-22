@@ -138,6 +138,7 @@ class Project(BaseDBModel):
     cover_image = models.ImageField(upload_to='project_covers/', blank=True, null=True)
     milestones = models.JSONField(default=list, blank=True)
     goals = models.JSONField(default=list, blank=True)
+    donation_supports = models.JSONField(default=list, blank= True, null=True)
 
     # Impact tracking
     beneficiary_count = models.IntegerField(default=0, null=True, blank=True)

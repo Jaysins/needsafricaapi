@@ -93,6 +93,7 @@ class ProjectRequestSchema(Schema):
     deadline: datetime | None = None
     milestones: List[str] | None = None
     goals: List[str] | None = None
+    donation_supports:List[str] | None = None
     status: str | None = None
     category: str | None = None
     location: str | None = None

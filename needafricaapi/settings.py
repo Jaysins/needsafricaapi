@@ -158,14 +158,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'api.User'
-FRONTEND_URL = "https://needsafrica.org"
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_API_URL = os.getenv("PAYSTACK_API_URL")
-FRONTEND_URL = "http://localhost:8080"
+FRONTEND_URL = "https://needsafrica.org"
 PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")

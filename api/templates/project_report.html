@@ -464,7 +464,7 @@
                                 <div class="stat-label">Raised So Far</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-value">{{ project.percentage_funded }}</div>
+                                <div class="stat-value">%{{ project.percentage_funded }}</div>
                                 <div class="stat-label">Funded</div>
                             </div>
                             <div class="stat-card">
@@ -512,33 +512,21 @@
                                 {% endif %}
                             </ul>
                         </div>
-                    </div>
 
-                    <div class="section animate-on-scroll">
-                        <div class="section-header">
-                            <div class="section-icon">
-                                <i class="fas fa-hand-holding-heart"></i>
-                            </div>
-                            <h2>What Your Donation Supports</h2>
-                        </div>
-
-                        <div class="donation-grid">
-                            <div class="donation-card">
-                                <div class="donation-amount">$50</div>
-                                <div class="donation-description">Clears one laptop through customs and handles import fees</div>
-                            </div>
-                            <div class="donation-card">
-                                <div class="donation-amount">$100</div>
-                                <div class="donation-description">Covers one student's complete digital setup including accessories</div>
-                            </div>
-                            <div class="donation-card">
-                                <div class="donation-amount">$500</div>
-                                <div class="donation-description">Powers an entire classroom with laptops and training materials</div>
-                            </div>
-                            <div class="donation-card">
-                                <div class="donation-amount">$1,500</div>
-                                <div class="donation-description">Sponsors complete shipping and delivery logistics for one school</div>
-                            </div>
+                        <div>
+                            <h3 style="font-size: 20px; margin-bottom: 16px; color: #1e784c;">
+                                <i class="fas fa-check-circle" style="margin-right: 8px; color: #1e784c;"></i>
+                                Donation Supports
+                            </h3>
+                            <ul class="milestones-list">
+                                {% if project.donation_supports %}
+                                    {% for support in project.donation_supports %}
+                                        <li>{{ support }}</li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>—</li>
+                                {% endif %}
+                            </ul>
                         </div>
                     </div>
 
