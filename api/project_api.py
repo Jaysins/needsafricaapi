@@ -22,7 +22,9 @@ router = Router(tags=["Projects"])
 def list_projects(request, filters: ProjectFilter = Query(...), page: int = 1, page_size: int = 10):
     try:
         from django.core.files.storage import default_storage
+        from django.conf import settings
         print(default_storage.__class__)
+        print(settings.CLOUDINARY_STORAGE)
 
         queryset = Project.objects.prefetch_related("photos").all().order_by('-created_at')
         if filters.search:
