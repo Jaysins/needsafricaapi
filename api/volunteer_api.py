@@ -37,6 +37,8 @@ def create_volunteer(
             availability=payload.availability,
             hours=payload.hours,
             days=payload.days,
+            phone_number = payload.phone_number,
+            email = payload.email
         )
 
         if cv:

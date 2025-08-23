@@ -126,6 +126,8 @@ class ProjectFilter(FilterSchema):
 class VolunteerRequestSchema(Schema):
     first_name: str
     last_name: str
+    phone_number: str | None = None
+    email: str | None = None
     age: int
     country: str
     role: str

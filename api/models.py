@@ -406,6 +406,8 @@ class Volunteer(BaseDBModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     age = models.PositiveIntegerField()
+    phone_number = models.CharField(max_length=12, blank=True, null=True)
+    email = models.EmailField(max_length=150, blank=True, null=True)
     country = models.CharField(max_length=100)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     availability = models.CharField(max_length=50, choices=AVAILABILITY_CHOICES)
