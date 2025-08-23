@@ -158,7 +158,7 @@ def download_project_report(request, project_id: int):
             "summary": project.summary,
             "target_amount": project.target_amount,
             "amount_raised": project.amount_raised,
-            "percentage_funded": round(project.percentage_funded,2),
+            "percentage_funded": round(project.percentage_funded, 2) if project.percentage_funded else 0,
             "remaining_amount": project.remaining_amount,
             "deadline": project.deadline,
             "goals": project.goals or [],

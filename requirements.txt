@@ -35,3 +35,5 @@ urllib3==2.5.0
 uvicorn==0.35.0
 whitenoise==6.9.0
 weasyprint==66.0
+cloudinary
+django-cloudinary-storage
