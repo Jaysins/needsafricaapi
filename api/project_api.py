@@ -21,6 +21,9 @@ router = Router(tags=["Projects"])
 @router.get("/", auth=None, response={200: ProjectListSchema, 400: ErrorResponse})
 def list_projects(request, filters: ProjectFilter = Query(...), page: int = 1, page_size: int = 10):
     try:
+        from django.core.files.storage import default_storage
+        print(default_storage.__class__)
+
         queryset = Project.objects.prefetch_related("photos").all().order_by('-created_at')
         if filters.search:
             queryset = queryset.filter(Q(title__icontains=filters.search) | Q(summary__icontains=filters.search) | Q(
