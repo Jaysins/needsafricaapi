@@ -18,7 +18,6 @@ import os
 from dotenv import load_dotenv
 import cloudinary
 
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-bs$*r4@1-_wxbe)$-gc$=!hu&es=h^w3+m6b9ylj4ha^bf-qm@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = bool(int(os.getenv("DEBUG", '1')))
 
 ALLOWED_HOSTS = ['*']
 
@@ -114,7 +113,6 @@ DATABASES = {
     )
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -147,26 +145,36 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-cloudinary.config(
-    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.environ.get('CLOUDINARY_API_KEY'),
-    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
-)
+if DEBUG is False:
+    cloudinary.config(
+        cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        api_key=os.environ.get('CLOUDINARY_API_KEY'),
+        api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+    )
 
-STORAGES = {
-    'default': {
-        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
+    STORAGES = {
+        'default': {
+            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = 'static/media'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
+
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static',
+    ]
+
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -176,15 +184,13 @@ AUTH_USER_MODEL = 'api.User'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-PAYSTACK_API_URL = "https://api.paystack.co"
-FRONTEND_URL = "https://needsafrica.org"
-PAYPAL_API_URL = "https://api-m.paypal.com"
-PAYPAL_PAYMENT_MODE = "live"
-
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+PAYSTACK_API_URL = os.getenv("PAYSTACK_API_URL")
+PAYPAL_API_URL = os.getenv("PAYPAL_API_URL")
+PAYPAL_PAYMENT_MODE = os.getenv("PAYPAL_PAYMENT_MODE")
 
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
-

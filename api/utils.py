@@ -1,7 +1,10 @@
-from .models import ExchangeRate
+from django.conf import settings
+
 
 def conversion(to_currency, from_currency, amount):
-    rate = ExchangeRate.objects.last()  
+    from .models import ExchangeRate
+
+    rate = ExchangeRate.objects.last()
 
     if not rate:
         raise ValueError("Exchange rate not set in database")
@@ -10,9 +13,17 @@ def conversion(to_currency, from_currency, amount):
         return amount
 
     if from_currency == "USD" and to_currency == "NGN":
-        return amount * rate.USD  
+        return amount * rate.USD
 
     if from_currency == "NGN" and to_currency == "USD":
-        return amount * rate.NGN  
+        return amount * rate.NGN
 
     raise ValueError("Unsupported currency conversion")
+
+
+def retrieve_storage():
+    from django.core.files.storage import FileSystemStorage
+    if settings.DEBUG:
+        return FileSystemStorage(location=settings.MEDIA_ROOT)  # local disk
+    from cloudinary_storage.storage import RawMediaCloudinaryStorage
+    return RawMediaCloudinaryStorage()

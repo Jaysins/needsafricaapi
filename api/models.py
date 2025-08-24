@@ -3,6 +3,9 @@ from core.models import BaseDBModel
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from .utils import retrieve_storage
+
+media_storage = retrieve_storage()
 
 
 class User(AbstractUser, BaseDBModel):
@@ -138,7 +141,7 @@ class Project(BaseDBModel):
     cover_image = models.ImageField(upload_to='project_covers/', blank=True, null=True)
     milestones = models.JSONField(default=list, blank=True)
     goals = models.JSONField(default=list, blank=True)
-    donation_supports = models.JSONField(default=list, blank= True, null=True)
+    donation_supports = models.JSONField(default=list, blank=True, null=True)
 
     # Impact tracking
     beneficiary_count = models.IntegerField(default=0, null=True, blank=True)
@@ -413,7 +416,10 @@ class Volunteer(BaseDBModel):
     availability = models.CharField(max_length=50, choices=AVAILABILITY_CHOICES)
     hours = models.CharField(max_length=50, blank=True, null=True)
     days = models.CharField(max_length=50, blank=True, null=True)
-    cv = models.FileField(upload_to='volunteer_cvs/')
+    cv = models.FileField(
+        upload_to="volunteer_cvs/",
+        storage=media_storage
+    )
 
     submitted_at = models.DateTimeField(auto_now_add=True)
 
