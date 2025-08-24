@@ -98,6 +98,7 @@ def handle_paypal_payment(payload_dict,
     """Handle PayPal payment initialization"""
     client = PaypalClient()
 
+    print("in paypal=====>", callback_url, payload_dict)
     try:
         if payload_dict['frequency'] == Donation.FrequencyChoices.ONCE:
             resp = client.create_payment(
@@ -168,9 +169,7 @@ def create_donation(request, payload: DonationRequestSchema):
                         code=400
                     )
 
-            callback_url = f"{settings.FRONTEND_URL}"
-            if project:
-                callback_url = f"{settings.FRONTEND_URL}/thankyou"
+            callback_url = f"{settings.FRONTEND_URL}/thankyou"
 
             # Update payload with proper field names
             payload_dict.update({
@@ -239,9 +238,10 @@ def paystack_webhook(request):
 
             # Process successful payment
             donation.status = Donation.StatusChoices.COMPLETED
-            donation.previous_amount_raised = donation.project.amount_raised
-            donation.current_amount_raised = donation.project.amount_raised \
-                                             + donation.get_project_amount()
+            if donation.project:
+                donation.previous_amount_raised = donation.project.amount_raised
+                donation.current_amount_raised = donation.project.amount_raised \
+                                                 + donation.get_project_amount()
 
             donation.save()  # This will trigger project amount update via model save method
 
@@ -265,6 +265,8 @@ def paypal_webhook(request):
             payload = request.body.decode("utf-8")
             headers = request.headers
 
+            print("i am response payallll")
+            print(payload)
             # Verify webhook signature
             verification_data = {
                 "auth_algo": headers.get("Paypal-Auth-Algo"),
@@ -367,9 +369,11 @@ def execute_paypal_payment(request, payer_id: str = None,
             # Set agreement_id for subscriptions
             if token and resp.get("agreement_id"):
                 donation.agreement_id = resp["agreement_id"]
-            donation.previous_amount_raised = donation.project.amount_raised
-            donation.current_amount_raised = donation.project.amount_raised \
-                                             + donation.get_project_amount()
+
+            if donation.project:
+                donation.previous_amount_raised = donation.project.amount_raised
+                donation.current_amount_raised = donation.project.amount_raised \
+                                                 + donation.get_project_amount()
 
             donation.save()  # This will trigger project update
 

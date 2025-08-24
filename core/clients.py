@@ -85,7 +85,7 @@ class PaypalClient():
         print(settings.PAYPAL_API_URL,
               self.client_id, self.secret_key)
         paypalrestsdk.configure({
-            "mode": "live",
+            "mode": settings.PAYPAL_PAYMENT_MODE,
             "client_id": self.client_id,
             "client_secret": self.secret_key
         })
