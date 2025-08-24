@@ -8,6 +8,7 @@ import hmac
 import hashlib
 import datetime
 import paypalrestsdk
+import os
 
 logger = logging.getLevelName(__name__)
 
@@ -89,8 +90,11 @@ class PaypalClient():
             "client_secret": self.secret_key
         })
 
+    def build_url(self, path):
+        return f"{self.api_url}{path}"
+
     def get_access_token(self):
-        url = f"https://api-m.sandbox.paypal.com/v1/oauth2/token"
+        url = self.build_url("/v1/oauth2/token")
         auth = (self.client_id, self.secret_key)
         data = {'grant_type': 'client_credentials'}
         response = requests.post(url, auth=auth, data=data)
@@ -101,7 +105,7 @@ class PaypalClient():
     def verify_webhook_signature(self, verification_data):
         access_token = self.get_access_token()
         print(self.api_url)
-        verify_url = f"https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature"
+        verify_url = self.build_url("/v1/notifications/verify-webhook-signature")
         headers = {
             'Authorization': f'Bearer {access_token}',
             'Content-Type': 'application/json'
