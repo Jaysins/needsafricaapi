@@ -81,9 +81,10 @@ class PaypalClient():
             'Authorization': f'Bearer {self.secret_key}',
             'Content-Type': 'application/json'
         }
-        print(settings.PAYPAL_API_URL)
+        print(settings.PAYPAL_API_URL,
+              self.client_id, self.secret_key)
         paypalrestsdk.configure({
-            "mode": "sandbox",
+            "mode": "live",
             "client_id": self.client_id,
             "client_secret": self.secret_key
         })
