@@ -178,12 +178,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 PAYSTACK_API_URL = "https://api.paystack.co"
 FRONTEND_URL = "https://needsafrica.org"
-PAYPAL_API_URL = "https://api-m.sandbox.paypal.com"
-PAYPAL_PAYMENT_MODE = "sandbox"
+PAYPAL_API_URL = "https://api-m.paypal.com"
+PAYPAL_PAYMENT_MODE = "live"
 
 
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
-PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET", "EHtImceKdcpx6KRJlziDVnIkQEnVCpxd1T-pxBMh4I0-pGqiqS5oR_enOxAgV8iTmGpZVm3YKfsVxmYi")
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "AVMWhfUl05V-avTHs39bFYqlN_HZaRjxVagMwtf_zXXnY2Oa-CDNFkz5p8kZ8Kj_h-Q_e4JgQM7dgXo5")
-PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID", "3KK27402J8259325N")
+PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
