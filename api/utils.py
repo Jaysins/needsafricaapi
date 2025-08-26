@@ -114,6 +114,8 @@ def send_donation_receipt_via_sendgrid(donation):
     sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
     try:
         response = sg.send(message)
+        print("sending emaill=+++receipt", response.status_code)
+
         # Consider checking response.status_code to ensure success (202 is success).
         if 200 <= response.status_code < 300:
             # Mark receipt as sent
@@ -270,6 +272,6 @@ def send_new_volunteer_notification(volunteer):
 
     sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
     response = sg.send(message)
-
+    print("sending emaill=+++___volunteer", response.status_code)
     if response.status_code not in range(200, 300):
         raise RuntimeError(f"SendGrid error: {response.status_code}, {response.body}")
