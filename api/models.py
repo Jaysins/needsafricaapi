@@ -349,9 +349,9 @@ class Donation(BaseDBModel):
         super().save(*args, **kwargs)
 
         # Update project amounts if donation completed
-        if (self.status == self.StatusChoices.COMPLETED and
-                self.project):  # Only on creation, not updates
-            self.project.add_donation_amount(self.get_project_amount())
+        if self.status == self.StatusChoices.COMPLETED:  # Only on creation, not updates
+            if self.project:
+                self.project.add_donation_amount(self.get_project_amount())
             send_donation_receipt_via_sendgrid(self)
 
     def convert_to_project_currency(self):
