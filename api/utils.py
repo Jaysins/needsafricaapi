@@ -119,8 +119,7 @@ def send_donation_receipt_via_sendgrid(donation):
         # Consider checking response.status_code to ensure success (202 is success).
         if 200 <= response.status_code < 300:
             # Mark receipt as sent
-            donation.receipt_sent = True
-            donation.save(update_fields=["receipt_sent"])
+            return True
         else:
             # raise or log
             raise RuntimeError(f"SendGrid returned status {response.status_code}: {response.body}")
