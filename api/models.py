@@ -3,7 +3,7 @@ from core.models import BaseDBModel
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
-from .utils import retrieve_storage
+from .utils import retrieve_storage, send_donation_receipt_via_sendgrid
 
 media_storage = retrieve_storage()
 
@@ -326,6 +326,7 @@ class Donation(BaseDBModel):
     payment_completed_at = models.DateTimeField(null=True, blank=True)
     failure_reason = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+    receipt_sent = models.BooleanField(default=False, help_text="True once donation receipt emailed to donor")
 
     class Meta:
         ordering = ['-created_at']
@@ -351,6 +352,7 @@ class Donation(BaseDBModel):
         if (self.status == self.StatusChoices.COMPLETED and
                 self.project):  # Only on creation, not updates
             self.project.add_donation_amount(self.get_project_amount())
+            send_donation_receipt_via_sendgrid(self)
 
     def convert_to_project_currency(self):
         """Convert donation amount to project currency"""

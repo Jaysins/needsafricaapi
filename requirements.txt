@@ -37,3 +37,5 @@ whitenoise==6.9.0
 weasyprint==66.0
 cloudinary
 django-cloudinary-storage
+sendgrid
+reportlab

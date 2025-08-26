@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Volunteer Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #16a34a;
+            margin-bottom: 10px;
+        }
+        .details {
+            margin-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+        .detail-item {
+            margin: 6px 0;
+        }
+        .label {
+            font-weight: bold;
+            color: #374151;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>New Volunteer Registration</h2>
+        <p>A new volunteer has registered on NeedsAfrica. Below are their details:</p>
+
+        <div class="details">
+            <p class="detail-item"><span class="label">Name:</span> {{ first_name }} {{ last_name }}</p>
+            <p class="detail-item"><span class="label">Age:</span> {{ age }}</p>
+            <p class="detail-item"><span class="label">Role:</span> {{ role }}</p>
+            <p class="detail-item"><span class="label">Availability:</span> {{ availability }}</p>
+
+            {% if availability == "Part Time" %}
+                <p class="detail-item"><span class="label">Hours:</span> {{ hours }}</p>
+                <p class="detail-item"><span class="label">Days:</span> {{ days }}</p>
+            {% endif %}
+
+            <p class="detail-item"><span class="label">Email:</span> {{ email }}</p>
+            <p class="detail-item"><span class="label">Phone:</span> {{ phone_number }}</p>
+            <p class="detail-item"><span class="label">Country:</span> {{ country }}</p>
+        </div>
+
+        <div class="footer">
+            <p>If a CV was uploaded, it is attached to this email.</p>
+            <p>&copy; {{ now|date:"Y" }} NeedsAfrica</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -194,3 +194,7 @@ PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 PAYPAL_SECRET_KEY = os.getenv("PAYPAL_CLIENT_SECRET")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_WEBHOOK_ID = os.getenv("PAYPAL_WEBHOOK_ID")
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = 'NeedsAfrica <no_reply@needsafrica.org>'
+ADMIN_EMAILS = ["info@needsafrica.org"]
+

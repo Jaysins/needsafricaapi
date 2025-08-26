@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Thanks for your donation</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height:1.4;">
+    <h2>Thank You for Your Generous Donation to NeedsAfrica 💚</h2>
+
+    <p>Dear {{ donor_full_name }},</p>
+
+    <p>On behalf of NeedsAfrica, we sincerely thank you for your generous donation of {{ currency_symbol }}{{ amount }} made on {{ donation_date }} through our website.</p>
+
+    <p>Your gift directly supports our mission of delivering educational and medical equipment to schools, laboratories, and hospitals across Africa, helping communities in need access tools for learning and healthcare.</p>
+
+    <h3>Donation Receipt</h3>
+    <ul>
+      <li><strong>Donor Name:</strong> {{ donor_full_name }}</li>
+      <li><strong>Donation Amount:</strong> {{ currency_symbol }}{{ amount }}</li>
+      <li><strong>Transaction ID:</strong> {{ reference }}</li>
+      <li><strong>Date:</strong> {{ donation_date }}</li>
+      <li><strong>Payment Method:</strong> {{ payment_method }}</li>
+    </ul>
+
+    <p>Your donation may be tax-deductible as allowed by law. NeedsAfrica is a registered nonprofit organization in the State of Texas.</p>
+       Please retain this email for your records.
+
+    <p>NeedsAfrica Inc. has applied for recognition as a tax-exempt 501(c)(3) organization. If approved, the exemption will be retroactive to our incorporation date, and your donation will be tax-deductible to the extent allowed by law.</p>
+
+    <p>We are grateful for your partnership in making a lasting impact. Together, we are bridging the gap and empowering communities.</p>
+
+    <p>Warm regards,<br/>
+    The NeedsAfrica Team<br/>
+    📧 info@needsafrica.org<br/>
+    🌍 <a href="https://www.needsafrica.org">www.needsafrica.org</a></p>
+
+  <footer>
+    THIS IS AN AUTO REPLY EMAIL. PLEASE DO NOT REPLY THIS EMAIL AS IT WILL NOT BE ATTENDED TO. PLEASE SEND YOUR REPLIES TO INFO@NEEDSAFRICA.ORG.
+  </footer>
+  </body>
+</html>

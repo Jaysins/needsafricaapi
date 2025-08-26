@@ -1,0 +1,82 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Donation Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            margin: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .content {
+            margin-bottom: 40px;
+        }
+
+        h2, h3 {
+            color: #2a7a4b;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 4px 0;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{% static 'images/logo.png' %}" alt="NeedsAfrica Logo" />
+    </div>
+
+    <div class="content">
+        <h2>Thank You for Your Generous Donation 💚</h2>
+        <p>Dear {{ donor_full_name }},</p>
+        <p>On behalf of NeedsAfrica, we sincerely thank you for your generous donation of {{ currency_symbol }}{{ amount }} made on {{ donation_date }}.</p>
+        <p>Your gift directly supports our mission of delivering educational and medical equipment to schools, laboratories, and hospitals across Africa.</p>
+
+        <h3>Donation Receipt</h3>
+        <ul>
+            <li><strong>Donor Name:</strong> {{ donor_full_name }}</li>
+            <li><strong>Donation Amount:</strong> {{ currency_symbol }}{{ amount }}</li>
+            <li><strong>Transaction ID:</strong> {{ reference }}</li>
+            <li><strong>Date:</strong> {{ donation_date }}</li>
+            <li><strong>Payment Method:</strong> {{ payment_method }}</li>
+        </ul>
+
+        <p>Please retain this receipt for your records. NeedsAfrica Inc. has applied for recognition as a tax-exempt 501(c)(3) organization. If approved, your donation will be tax-deductible to the extent allowed by law.</p>
+    </div>
+
+    <footer>
+        <p>
+            The NeedsAfrica Team<br />
+            📧 info@needsafrica.org | 🌍 www.needsafrica.org
+        </p>
+    </footer>
+</body>
+</html>
