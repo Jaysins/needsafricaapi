@@ -7,6 +7,7 @@ from core.schema import ErrorResponse
 from .models import Volunteer
 
 from .schema import VolunteerResponse, VolunteerRequestSchema, VolunteerListSchema, VolunteerFilter
+from .utils import send_new_volunteer_notification
 
 router = Router(tags=["Volunteers"])
 
@@ -45,6 +46,11 @@ def create_volunteer(
             volunteer.cv = cv
             volunteer.save()
 
+        try:
+            send_new_volunteer_notification(volunteer)
+        except Exception as e:
+            print('error in sending volunteer mail', str(e))
+            pass
         return 201, VolunteerResponse(data=volunteer)
 
     except Exception as e:
